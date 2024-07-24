@@ -3,12 +3,11 @@
 #include <iomanip>
 #include <iostream>
 
-constexpr std::size_t num_samples = (1 << 4);
-constexpr std::size_t freq = 3;
+constexpr std::size_t num_samples = (1 << 3);
 
 constexpr double f(double i) {
-    return  2 * cos(2 * M_PI *     freq * i / num_samples)
-          +     sin(2 * M_PI * 2 * freq * i / num_samples);
+    return  2 * cos(2 * M_PI * 1 * i / num_samples)
+          +     sin(2 * M_PI * 2 * i / num_samples);
 }
 
 int main() {
