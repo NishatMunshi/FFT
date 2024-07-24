@@ -26,4 +26,6 @@ int main() {
         std::cout << i << ":\t" << std::fixed << std::setprecision(2)
                   << samples.at(i) << "\t" << fft.at(i) << "\n";
     }
+
+    return 0;
 }
