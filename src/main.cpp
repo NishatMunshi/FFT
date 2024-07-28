@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <iostream>
 
-constexpr std::size_t num_samples = (1 << 3);
+constexpr std::size_t num_samples = (1 << 16);
 
 constexpr double f(double i) {
     return  2 * cos(2 * M_PI * 1 * i / num_samples)
