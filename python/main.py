@@ -18,4 +18,6 @@ ifft = iFFT(fft)
 print("index       sample           FFT         inverse FFT")
 print("------      ------      --------------  --------------")
 for i in range(samples_size):
-    print(f"{i}:\t{samples[i].real: .2f} +{samples[i].imag: .2f}j\t{fft[i].real: .2f} +{fft[i].imag: .2f}j\t{ifft[i].real: .2f} +{ifft[i].imag: .2f}j")
+    print(f"{i}:\t{samples[i].real: .2f} +{samples[i].imag: .2f}j\t\
+          {fft[i].real: .2f} +{fft[i].imag: .2f}j\t\
+            {ifft[i].real: .2f} +{ifft[i].imag: .2f}j")
