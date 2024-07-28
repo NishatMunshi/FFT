@@ -28,11 +28,13 @@ def is_power_of_2(x):
 def FFT(samples):
     if not is_power_of_2(len(samples)):
         raise ValueError("Samples size is not a power of two.\n")
+    
     return FFT_recursive(samples, cmath.exp(0 - 2j * cmath.pi / len(samples)))
 
 def iFFT(samples):
     if not is_power_of_2(len(samples)):
         raise ValueError("Samples size is not a power of two.\n")
+    
     ifft = FFT_recursive(samples, cmath.exp(0 + 2j * cmath.pi / len(samples)))
     ifft[:] = [x / len(samples) for x in ifft]
     return ifft
