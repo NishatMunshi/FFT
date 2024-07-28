@@ -4,7 +4,7 @@ SRC_DIR  = ./src
 OBJ_DIR  = ./build
 EXE_DIR  = ./exec
 BLD_DIRS = $(OBJ_DIR) $(EXE_DIR)
-TMP_DIRS = $(OBJ_DIR)
+TMP_DIRS = $(OBJ_DIR) $(EXE_DIR)
 
 # file extentions
 HDR_EXT = hpp
