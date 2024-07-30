@@ -46,7 +46,7 @@ std::vector<std::complex<double>> FFT(std::vector<std::complex<double>> const& _
         throw std::invalid_argument("Input size is not a power of 2\n");
     }
     using namespace std::literals::complex_literals;
-    return FFT(_samples, std::exp(2.0i * M_PI / double(_samples.size())));
+    return FFT(_samples, std::exp(2.0j * M_PI / double(_samples.size())));
 }
 
 std::vector<std::complex<double>> iFFT(std::vector<std::complex<double>> const& _samples) {
@@ -55,7 +55,7 @@ std::vector<std::complex<double>> iFFT(std::vector<std::complex<double>> const& 
         throw std::invalid_argument("Input size is not a power of 2\n");
     }
     using namespace std::literals::complex_literals;
-    auto ifft = FFT(_samples, std::exp(-2.0i * M_PI / double(n)));
+    auto ifft = FFT(_samples, std::exp(-2.0j * M_PI / double(n)));
     std::for_each(ifft.begin(), ifft.end(), [&](std::complex<double>& _z) { _z /= double(n); });
 
     return ifft;
