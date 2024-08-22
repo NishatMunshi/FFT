@@ -1,37 +1,88 @@
-#include "../include/FFT.hpp"
-
+#include <SFML/Graphics.hpp>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 
-constexpr std::size_t num_samples = (1 << 16);
+#include "../include/FFT.hpp"
 
-constexpr double f(double i) {
-    return  2 * cos(2 * M_PI * 1 * i / num_samples)
-        + sin(2 * M_PI * 2 * i / num_samples);
+constexpr double rect(double i, double L) {
+    if (std::abs(i) < std::abs(L)) {
+        return 1;
+    }
+    return 0;
+}
+
+#define WIN_DIM_VER 800
+#define WIN_DIM_HOR (2 * WIN_DIM_VER)
+
+void draw_fft_mag(std::vector<std::complex<double>> const &fft, sf::RenderWindow &window) {
+    sf::Vertex point{{0, 0}, sf::Color::Yellow};
+    float x_step = (float)WIN_DIM_HOR / 2 / fft.size();
+    auto largest_mag = std::abs(*std::max_element(fft.cbegin(),
+                                                  fft.cend(),
+                                                  [](std::complex<double> w, std::complex<double> z) { return std::abs(w) < std::abs(z); }));
+    float y_scalar = WIN_DIM_VER / largest_mag;
+
+    for (std::size_t index = fft.size() / 2; const auto &value : fft) {
+        if (index > fft.size()) index = 0;
+        auto mag = std::abs(value);
+
+        point.position = {(index++) * x_step,
+                          WIN_DIM_VER - y_scalar * (float)mag};
+
+        window.draw(&point, 1, sf::Points);
+    }
+}
+
+void draw_fft_phase(std::vector<std::complex<double>> const &fft, sf::RenderWindow &window) {
+    sf::Vertex point{{0, 0}, sf::Color::Green};
+    float x_step = (float)WIN_DIM_HOR / 2 / fft.size();
+    auto largest_arg = std::arg(*std::max_element(fft.cbegin(),
+                                                  fft.cend(),
+                                                  [](std::complex<double> w, std::complex<double> z) { return std::arg(w) < std::arg(z); }));
+    float y_scalar = WIN_DIM_VER / 4 / largest_arg;
+
+    for (std::size_t index = fft.size() / 2; const auto &value : fft) {
+        if (index > fft.size()) index = 0;
+        auto argument = std::arg(value);
+
+        point.position = {(index++) * x_step + WIN_DIM_HOR / 2,
+                          WIN_DIM_VER / 2 - y_scalar * (float)argument};
+
+        window.draw(&point, 1, sf::Points);
+    }
+}
+
+void draw_divider(sf::RenderWindow &window) {
+    sf::VertexArray lines(sf::LinesStrip, 2);
+    lines[0].position = sf::Vector2f(WIN_DIM_HOR / 2, 0);
+    lines[1].position = sf::Vector2f(WIN_DIM_HOR / 2, WIN_DIM_VER);
+
+    window.draw(lines);
 }
 
 int main() {
     std::vector<std::complex<double>> samples;
-    for (std::size_t i = 0; i < num_samples; ++i) {
-        samples.push_back(f(i));
+    for (int32_t i = INT16_MIN; i <= INT16_MAX; ++i) {
+        samples.push_back(rect(i, 10));
     }
 
-    auto time_begin = std::chrono::high_resolution_clock::now();
     auto const fft = FFT(samples);
-    auto time_end = std::chrono::high_resolution_clock::now();
 
-    auto const ifft = iFFT(fft);
+    sf::RenderWindow window{sf::VideoMode{WIN_DIM_HOR, WIN_DIM_VER}, "FFT"};
 
-    std::cout << "\tsamples\t\t" << "FFT\t\t" << "inverse FFT\n";
-    std::cout << "\t-------\t\t" << "---\t\t" << "-----------\n";
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
 
-    for (std::size_t i = 0; i < num_samples; ++i) {
-        std::cout << i << ":\t" << std::fixed << std::setprecision(2)
-            << samples.at(i) << "\t" << fft.at(i) << "\t" << ifft.at(i) << "\n";
+        window.clear();
+        draw_fft_mag(fft, window);
+        draw_divider(window);
+        draw_fft_phase(fft, window);
+        window.display();
     }
-
-    std::cout << "Execution time of FFT in C++ for " << num_samples << " samples = "
-        << std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_begin) << "\n";
     return 0;
 }
